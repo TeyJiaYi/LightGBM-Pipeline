@@ -1,0 +1,14 @@
+data_path: "data/raw/loan.csv"
+newdata_folder: "data/raw/new"
+
+drop_columns:
+  - loanId
+  - anon_ssn
+  - clarityFraudId
+  - originated
+  - originatedDate
+  - isFunded
+  - fpStatus
+  - approved
+
+remove_duplicates: true

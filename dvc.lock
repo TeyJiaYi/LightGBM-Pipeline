@@ -1,0 +1,27 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/preprocess.py config/preprocess_config.yaml
+    deps:
+    - path: config/preprocess_config.yaml
+      hash: md5
+      md5: 7322f22292007309c9c39d00c6a6f9fb
+      size: 230
+    - path: data/raw/loan.csv
+      hash: md5
+      md5: 4481eb49b806f42e5cb7b0f57a3fc197
+      size: 109756930
+    - path: data/raw/new
+      hash: md5
+      md5: 3e1b6c4937e9ae2b9fdb71cb4723142e.dir
+      size: 109756930
+      nfiles: 1
+    - path: src/preprocess.py
+      hash: md5
+      md5: ab50d0c526b512e53180dc7ff1ea32af
+      size: 1397
+    outs:
+    - path: data/processed/loan_clean.csv
+      hash: md5
+      md5: a9b9fe479d2a5647530734d49897876d
+      size: 52810684

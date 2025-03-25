@@ -1,0 +1,19 @@
+stages:
+  preprocess:
+    cmd: python src/preprocess.py config/preprocess_config.yaml
+    deps:
+      - src/preprocess.py
+      - config/preprocess_config.yaml
+      - data/raw/loan.csv
+      - data/raw/new
+    outs:
+      - data/processed/loan_clean.csv
+
+  train:
+    cmd: python src/train_model.py config/train_config.yaml
+    deps:
+      - src/train_model.py
+      - config/train_config.yaml
+      - data/processed/loan_clean.csv
+    outs:
+      - models/

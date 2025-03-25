@@ -1,0 +1,37 @@
+# dataset path
+dataset_path: "data/processed/loan_clean.csv"
+
+target_col: "risk_indicator"
+test_size: 0.3
+random_state: 42
+
+# Default LightGBM hyperparameters (for non-grid search training)
+learning_rate: 0.05
+num_leaves: 31
+num_boost_round: 1000
+early_stopping_rounds: 50
+verbose: -1
+
+# Threshold for binary classification metrics
+threshold: 0.5
+
+
+
+# Grid search settings
+grid_search: true
+param_grid:
+  learning_rate: [0.01, 0.05, 0.1]
+  num_leaves: [15, 31, 63]
+grid_cv: 3
+grid_verbose: 1
+grid_n_jobs: -1
+grid_scoring: "roc_auc"
+
+
+
+# Naming and output directories
+model_dir: "models"
+model_prefix: "lightgbm_base_model"
+grid_model_prefix: "lightgbm_best_model"
+grid_search_results_dir: "grid_search_results"
+
