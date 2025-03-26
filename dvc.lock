@@ -5,8 +5,8 @@ stages:
     deps:
     - path: config/preprocess_config.yaml
       hash: md5
-      md5: 7322f22292007309c9c39d00c6a6f9fb
-      size: 230
+      md5: 084fdb80c26d7a9cc9c3d6fd0710b803
+      size: 251
     - path: data/raw/loan.csv
       hash: md5
       md5: 4481eb49b806f42e5cb7b0f57a3fc197
@@ -18,10 +18,31 @@ stages:
       nfiles: 1
     - path: src/preprocess.py
       hash: md5
-      md5: ab50d0c526b512e53180dc7ff1ea32af
-      size: 1397
+      md5: 7ccb4e837e26e5dfda801e75623bab87
+      size: 4488
     outs:
     - path: data/processed/loan_clean.csv
       hash: md5
-      md5: a9b9fe479d2a5647530734d49897876d
-      size: 52810684
+      md5: b0c764a9422c484dd7dd5d57f42e4d61
+      size: 1141516
+  train:
+    cmd: python src/train_model.py config/train_config.yaml
+    deps:
+    - path: config/train_config.yaml
+      hash: md5
+      md5: 3a8255d51f13409a3f4697438b261ecc
+      size: 980
+    - path: data/processed/loan_clean.csv
+      hash: md5
+      md5: b0c764a9422c484dd7dd5d57f42e4d61
+      size: 1141516
+    - path: src/train_model.py
+      hash: md5
+      md5: be79eda9c464b508b0e4f71ab868b5cd
+      size: 6372
+    outs:
+    - path: models/
+      hash: md5
+      md5: 1544a48ad2dbd0fd90d4204f0f4af3db.dir
+      size: 544159
+      nfiles: 1

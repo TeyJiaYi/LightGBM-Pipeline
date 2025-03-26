@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1743010466315
+current_stage: None
+description: ''
+last_updated_timestamp: 1743010466315
+name: LoanRiskModel
+run_id: c34ab3a1e01a458e9b4d6426a4b64046
+run_link: ''
+source: mlflow-artifacts:/0/c34ab3a1e01a458e9b4d6426a4b64046/artifacts/model
+status: READY
+status_message: null
+storage_location: mlflow-artifacts:/0/c34ab3a1e01a458e9b4d6426a4b64046/artifacts/model
+user_id: null
+version: 2

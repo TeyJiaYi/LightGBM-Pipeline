@@ -5,9 +5,13 @@ import pandas as pd
 import lightgbm as lgb
 import mlflow
 import mlflow.lightgbm
+import mlflow.sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score
 import datetime
+
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
+
 
 def train_default(X_train, y_train, X_val, y_val, config, random_state, timestamp):
     train_data = lgb.Dataset(X_train, label=y_train)
@@ -26,14 +30,15 @@ def train_default(X_train, y_train, X_val, y_val, config, random_state, timestam
     mlflow.log_params(params)
     mlflow.log_param("test_size", config.get("test_size", 0.3))
     mlflow.log_param("random_state", random_state)
+    early_stopping_cb = lgb.early_stopping(stopping_rounds=config.get('early_stopping_rounds', 50))
+    log_eval_cb = lgb.log_evaluation(period=100)
     
     model = lgb.train(
         params,
         train_data,
         num_boost_round=config.get("num_boost_round", 1000),
         valid_sets=[val_data],
-        early_stopping_rounds=config.get("early_stopping_rounds", 50),
-        verbose_eval=100,
+        callbacks=[early_stopping_cb, log_eval_cb]
     )
     
     y_pred = model.predict(X_val, num_iteration=model.best_iteration)
@@ -82,8 +87,8 @@ def train_grid_search(X_train, y_train, X_val, y_val, config, random_state, time
         pickle.dump(best_model, f)
     
     # Log the model via MLflow using the sklearn flavor
-    import mlflow.sklearn
-    mlflow.sklearn.log_model(best_model, "model", registered_model_name="LoanRiskModel")
+    
+    mlflow.sklearn.log_model(best_model, "model", registered_model_name="LoanRiskModel",input_example=X_val[:5],signature=mlflow.models.infer_signature(X_val, y_val),)
     
     # Save grid search results to a CSV file and log as an artifact
     grid_results_df = pd.DataFrame(grid.cv_results_)
@@ -132,7 +137,7 @@ def main(config_path):
         model_prefix = config.get("model_prefix", "lightgbm_model")
         model_path = os.path.join(config.get("model_dir", "models"), f"{model_prefix}_{timestamp}.txt")
         model.save_model(model_path)
-        mlflow.lightgbm.log_model(model, "model", registered_model_name="LoanRiskModel")
+        mlflow.lightgbm.log_model(model, "model", registered_model_name="LoanRiskModel", input_example=X_val[:5],signature=mlflow.models.infer_signature(X_val, y_val),)
 
     auc = roc_auc_score(y_val, y_pred)
     threshold = config.get("threshold", 0.5)

@@ -10,5 +10,6 @@ drop_columns:
   - isFunded
   - fpStatus
   - approved
+  - applicationDate
 
 remove_duplicates: true

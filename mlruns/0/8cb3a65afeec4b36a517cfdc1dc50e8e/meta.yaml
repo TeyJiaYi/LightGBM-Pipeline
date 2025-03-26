@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/0/8cb3a65afeec4b36a517cfdc1dc50e8e/artifacts
+end_time: 1743009465763
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 8cb3a65afeec4b36a517cfdc1dc50e8e
+run_name: salty-hog-907
+run_uuid: 8cb3a65afeec4b36a517cfdc1dc50e8e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743009384056
+status: 3
+tags: []
+user_id: '60177'
