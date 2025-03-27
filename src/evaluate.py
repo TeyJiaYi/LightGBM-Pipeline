@@ -13,6 +13,10 @@ from sklearn.metrics import (
     f1_score, classification_report
 )
 
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_experiment("LoanRisk")  
+
+
 def load_latest_model(models_dir):
     """
     Find the newest model file in `models_dir` with a known extension

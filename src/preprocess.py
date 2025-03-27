@@ -93,7 +93,7 @@ def main(config_path):
     # Encoding fot the payfrequency
     if "payFrequency" in df.columns:
         mode_value = df["payFrequency"].mode()[0]
-        df["payFrequency"].fillna(mode_value, inplace=True)
+        df["payFrequency"] = df["payFrequency"].fillna(mode_value)
 
         payfreq_map = {
             "W": 0,  # Weekly

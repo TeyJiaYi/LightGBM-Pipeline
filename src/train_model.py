@@ -12,7 +12,7 @@ from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, reca
 import datetime
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
-
+mlflow.set_experiment("LoanRisk")  
 
 def train_default(X_train, y_train, X_val, y_val, config, random_state, timestamp):
     train_data = lgb.Dataset(X_train, label=y_train)

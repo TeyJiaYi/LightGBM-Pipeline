@@ -5,26 +5,26 @@ stages:
     deps:
     - path: config/preprocess_config.yaml
       hash: md5
-      md5: 084fdb80c26d7a9cc9c3d6fd0710b803
-      size: 251
-    - path: data/raw/loan.csv
+      md5: d931ec43806201a91c91f189dbfed214
+      size: 545
+    - path: data/processed/train_loan.csv
       hash: md5
-      md5: 4481eb49b806f42e5cb7b0f57a3fc197
-      size: 109756930
-    - path: data/raw/new
+      md5: b114bff6f40d6938fcbf03fb89a1cffe
+      size: 913195
+    - path: data/raw/new/
       hash: md5
       md5: 3e1b6c4937e9ae2b9fdb71cb4723142e.dir
       size: 109756930
       nfiles: 1
     - path: src/preprocess.py
       hash: md5
-      md5: 7ccb4e837e26e5dfda801e75623bab87
-      size: 4488
+      md5: 9da151d4bc7853b456a4c46f0af5270a
+      size: 5718
     outs:
-    - path: data/processed/loan_clean.csv
+    - path: data/processed/loan_clean_latest.csv
       hash: md5
-      md5: b0c764a9422c484dd7dd5d57f42e4d61
-      size: 1141516
+      md5: de7f7844a9bdfbbecdee7ee2c3c9f913
+      size: 933078
   train:
     cmd: python src/train_model.py config/train_config.yaml
     deps:
@@ -46,3 +46,28 @@ stages:
       md5: 1544a48ad2dbd0fd90d4204f0f4af3db.dir
       size: 544159
       nfiles: 1
+  split_test:
+    cmd: python src/split_test.py config/split_test_config.yaml
+    deps:
+    - path: config/split_test_config.yaml
+      hash: md5
+      md5: 955077264f4ab5105dcd922fb0bd2f32
+      size: 626
+    - path: data/raw/original/
+      hash: md5
+      md5: f9a74faa03ac9af15a5db650e1e4cf8e.dir
+      size: 109756930
+      nfiles: 1
+    - path: src/split_test.py
+      hash: md5
+      md5: e03455bea055646a436101c334575a4b
+      size: 7404
+    outs:
+    - path: data/processed/train_loan.csv
+      hash: md5
+      md5: b114bff6f40d6938fcbf03fb89a1cffe
+      size: 913195
+    - path: data/test/test_loan.csv
+      hash: md5
+      md5: 088dc9c5c02b17a092027aedc4cde746
+      size: 228443
