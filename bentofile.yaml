@@ -1,0 +1,7 @@
+service: "LoanRiskService.py:svc"
+python:
+  packages:
+    - bentoml
+    - mlflow
+    - lightgbm
+    - numpy

@@ -1,4 +1,4 @@
-import glob
+
 import os
 import sys
 import yaml
@@ -9,13 +9,15 @@ import mlflow.lightgbm
 import mlflow.sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score
-import warnings
 import datetime
+import mlflow
+from mlflow.tracking import MlflowClient
+from sklearn.model_selection import GridSearchCV
+from lightgbm import LGBMClassifier
+import pickle
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("LoanRisk")  
-
-warnings.filterwarnings("ignore", message="Could not find the number of physical cores")
 
 
 def train_default(X_train, y_train, X_val, y_val, config, random_state, timestamp):
@@ -50,11 +52,10 @@ def train_default(X_train, y_train, X_val, y_val, config, random_state, timestam
     return model, y_pred
 
 def train_grid_search(X_train, y_train, X_val, y_val, config, random_state, timestamp):
-    from sklearn.model_selection import GridSearchCV
-    from lightgbm import LGBMClassifier
-    import pickle
     
-    param_grid = config.get("param_grid", {"learning_rate": [0.01, 0.05, 0.1], "num_leaves": [15, 31, 63]})
+    param_grid = config.get("param_grid", 
+                            {"learning_rate": [0.01, 0.05, 0.1], 
+                             "num_leaves": [15, 31, 63]})
     
     lgbm_clf = LGBMClassifier(
         objective="binary",
@@ -93,7 +94,12 @@ def train_grid_search(X_train, y_train, X_val, y_val, config, random_state, time
     
     # Log the model via MLflow using the sklearn flavor
     
-    mlflow.sklearn.log_model(best_model, "model", registered_model_name="LoanRiskModel",input_example=X_val[:5],signature=mlflow.models.infer_signature(X_val, y_val),)
+    mlflow.sklearn.log_model(best_model, 
+                             "model", 
+                             registered_model_name="LoanRiskModel",
+                             input_example=X_val[:5],
+                             signature=mlflow.models.infer_signature(X_val, y_val),)
+
     
     # Save grid search results to a CSV file and log as an artifact
     grid_results_df = pd.DataFrame(grid.cv_results_)
@@ -143,7 +149,10 @@ def main(config_path):
         model_prefix = config.get("model_prefix", "lightgbm_model")
         model_path = os.path.join(config.get("model_dir", "models"), f"{model_prefix}_{timestamp}.txt")
         model.save_model(model_path)
-        mlflow.lightgbm.log_model(model, "model", registered_model_name="LoanRiskModel", input_example=X_val[:5],signature=mlflow.models.infer_signature(X_val, y_val),)
+        mlflow.lightgbm.log_model(model, "model", 
+                                  registered_model_name="LoanRiskModel", 
+                                  input_example=X_val[:5],
+                                  signature=mlflow.models.infer_signature(X_val, y_val),)
 
     auc = roc_auc_score(y_val, y_pred)
     threshold = config.get("threshold", 0.5)
@@ -158,6 +167,26 @@ def main(config_path):
     mlflow.log_metric("val_recall", recall)
 
     mlflow.end_run()
+
+
+    client = MlflowClient()
+
+    # new (alias-based) lines
+    all_versions = client.search_model_versions(f"name='LoanRiskModel'")
+    if not all_versions:
+        print("No model versions found. Cannot set alias.")
+    else:
+        new_version = max(int(mv.version) for mv in all_versions)
+        print(f"Newest version => {new_version}")
+        alias_name = "candidate"   # or "latest"
+        client.set_registered_model_alias(
+            name="LoanRiskModel",
+            alias=alias_name,
+            version=new_version
+        )
+        with open("model_version.txt","w") as f:
+            f.write(str(new_version))
+
 
     print("Model training complete.")
     print(f"Validation AUC: {auc:.4f}, Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}")

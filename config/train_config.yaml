@@ -1,6 +1,6 @@
 # dataset path
 dataset_path: "data/processed/loan_clean_latest.csv"
-
+target_col: "risk_indicator"
 
 test_size: 0.3
 random_state: 42

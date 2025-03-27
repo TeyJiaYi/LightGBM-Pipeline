@@ -39,3 +39,16 @@ stages:
       - data/test/test_loan.csv  # stable final test
     outs:
       - reports/
+  
+  bento_build:
+    cmd: python src/bento_build.py
+    deps:
+      - src/bento_build.py
+      - LoanRiskService.py
+      - bentofile.yaml
+      
+  k8s_deploy:
+    cmd: bash deployment/k8s/deploy.sh
+    deps:
+      - deployment/k8s/deploy.sh
+      # The container image is ephemeral, so no direct DVC out here

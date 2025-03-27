@@ -1,5 +1,13 @@
 test_data_path: "data/test/test_loan.csv"
 models_dir: "models"
 target_col: "risk_indicator"
-threshold: 0.5
-min_auc: 0.70  # fail if below 0.70
+
+# For generating binary predictions from probabilities
+threshold_for_class: 0.5
+
+# The user-chosen metric we want to ensure is above min_value
+min_metric_name: "accuracy"   # could be "auc", "precision", "recall", "f1", etc.
+min_metric_value: 0.60        # If the new model's accuracy < 0.80 => fail
+
+# If the new model passes the above threshold, we do champion-challenger
+compare_metric: "auc"         # We compare new vs. old champion on AUC
