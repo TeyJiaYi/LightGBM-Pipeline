@@ -1,3 +1,4 @@
+import glob
 import os
 import sys
 import yaml
@@ -105,8 +106,9 @@ def main(config_path):
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
     
-    processed_data_path = config.get("dataset_path")
-    data = pd.read_csv(processed_data_path)
+    dataset_path = config.get("dataset_path", "data/processed/loan_clean_latest.csv")
+    print(f"Reading merged dataset from: {dataset_path}")
+    data = pd.read_csv(dataset_path)
 
     target_col = config.get("target_col", "risk_indicator")
     if target_col not in data.columns:

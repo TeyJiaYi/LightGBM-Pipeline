@@ -1,3 +1,4 @@
+import datetime
 import yaml
 import pandas as pd
 import os
@@ -14,26 +15,47 @@ def main(config_path):
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
 
-    data_path = config.get("data_path", "data/raw/loan.csv")
+
     drop_cols = config.get("drop_columns",[])
     remove_duplicates = config.get("remove_duplicates", True)
     newdata_folder = config.get("newdata_folder", "data/raw/new")
 
+    # stable training set from split_test
+    base_train_path = config.get("base_train_path", "train_loan.csv")
 
-    df = pd.read_csv(data_path)
 
+    # 2. Gather CSVs from newdata_folder
     csv_files = glob.glob(os.path.join(newdata_folder, "*.csv"))
     if not csv_files:
-        print(f"No new CSV data files found in the folder: {newdata_folder}")
+        print(f"No new CSV data found in: {newdata_folder}")
+        return  # No new data => do nothing or exit
 
+    # 3. Read new data, concat
     df_list = []
     for file in csv_files:
         temp_df = pd.read_csv(file)
         df_list.append(temp_df)
-    df = pd.concat(df_list, ignore_index=True)
+    new_data_df = pd.concat(df_list, ignore_index=True)
+    print(f"Loaded {new_data_df.shape[0]} rows from {len(csv_files)} file(s) in {newdata_folder}.")
 
+    # 4. If a stable train_loan.csv exists, unify with new_data_df
+    if base_train_path and os.path.isfile(base_train_path):
+        print(f"Merging existing base training data from: {base_train_path}")
+        old_train_df = pd.read_csv(base_train_path)
+        # unify
+        df = pd.concat([old_train_df, new_data_df], ignore_index=True)
+        print(f"Combined old train + new data => total {df.shape[0]} rows.")
+    else:
+        # If there's no stable train_loan yet, treat new_data as entire training data
+        df = new_data_df
+        print("No base training file found; using only new data as training set.")
+
+    # 5. Remove duplicates if specified
     if remove_duplicates:
+        before = len(df)
         df.drop_duplicates(inplace=True)
+        after = len(df)
+        print(f"Dropped {before - after} duplicates; final {after} rows.")
 
     default_positive_statuses = ["Paid Off Loan"]
     default_negative_statuses = [
@@ -68,7 +90,7 @@ def main(config_path):
     df.drop(columns=drop_cols, inplace=True, errors="ignore")
 
     
-    # Encoding fot he payfrequency
+    # Encoding fot the payfrequency
     if "payFrequency" in df.columns:
         mode_value = df["payFrequency"].mode()[0]
         df["payFrequency"].fillna(mode_value, inplace=True)
@@ -117,18 +139,21 @@ def main(config_path):
         'West': 4
     }
 
-    df['state'] = df['state'].str.upper()
-    df['region_code'] = df['state'].map(lambda x: region_code_map.get(region_map.get(x), None))
-    df.drop(columns=['state'], inplace=True)
+    if "state" in df.columns:
+        df["state"] = df["state"].str.upper()
+        df["region_code"] = df["state"].map(lambda x: region_code_map.get(region_map.get(x), None))
+        df.drop(columns=["state"], inplace=True)
 
-
+    # save the file
     os.makedirs("data/processed", exist_ok=True)
-    processed_data_path = os.path.join("data","processed","loan_clean.csv")
+    processed_data_path = os.path.join("data", "processed", f"loan_clean_latest.csv")
     df.to_csv(processed_data_path, index=False)
 
-    print(f"Preprocessing complete. Processed file saved to: {processed_data_path}")
+    print(f"Preprocessing complete. Overwrote => {processed_data_path} with merged data, total rows={len(df)}")
 
 if __name__ == "__main__":
-    # usage: python src/preprocess.py config/preprocess_config.yaml
+    if len(sys.argv) < 2:
+        print("Usage: python src/preprocess.py config/preprocess_config.yaml")
+        sys.exit(1)
     config_file = sys.argv[1]
     main(config_file)

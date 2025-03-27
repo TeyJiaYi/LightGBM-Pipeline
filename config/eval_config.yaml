@@ -1,0 +1,5 @@
+test_data_path: "data/test/test_loan.csv"
+models_dir: "models"
+target_col: "risk_indicator"
+threshold: 0.5
+min_auc: 0.70  # fail if below 0.70

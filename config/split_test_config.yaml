@@ -1,0 +1,30 @@
+original_data_folder: "data/raw/original"
+remove_duplicates: true
+drop_columns:
+  - loanId
+  - anon_ssn
+  - clarityFraudId
+  - originated
+  - originatedDate
+  - isFunded
+  - fpStatus
+  - approved
+  - applicationDate
+
+positive_loanstatus:
+  - "Paid Off Loan"
+
+negative_loanstatus:
+  - "External Collection"
+  - "Internal Collection"
+  - "Returned Item"
+  - "Settlement Paid Off"
+  - "Settled Bankruptcy"
+  - "Charged Off"
+  - "Charged Off Paid Off"
+
+test_ratio: 0.2            # 20% final test dataset
+random_state: 42
+
+# Options: "none", "undersample", "oversample", "smote"
+balance_mode: "none"

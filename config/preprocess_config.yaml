@@ -1,5 +1,8 @@
-data_path: "data/raw/loan.csv"
+remove_duplicates: true
 newdata_folder: "data/raw/new"
+
+# base train dataset
+base_train_path: "data/processed/train_loan.csv" 
 
 drop_columns:
   - loanId
@@ -12,4 +15,17 @@ drop_columns:
   - approved
   - applicationDate
 
-remove_duplicates: true
+# target variable
+positive_loanstatus:
+- "Paid Off Loan"
+
+negative_loanstatus:
+- "External Collection"
+- "Internal Colelction"
+- "Returned Item"
+- "Settlement Paid Off"
+- "Settled Bankruptcy"
+- "Charged Off"
+- "Charged Off Paid Off"
+
+
