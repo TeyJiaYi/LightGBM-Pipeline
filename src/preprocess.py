@@ -28,27 +28,40 @@ def main(config_path):
     csv_files = glob.glob(os.path.join(newdata_folder, "*.csv"))
     if not csv_files:
         print(f"No new CSV data found in: {newdata_folder}")
-        return  # No new data => do nothing or exit
 
-    # 3. Read new data, concat
-    df_list = []
-    for file in csv_files:
-        temp_df = pd.read_csv(file)
-        df_list.append(temp_df)
-    new_data_df = pd.concat(df_list, ignore_index=True)
-    print(f"Loaded {new_data_df.shape[0]} rows from {len(csv_files)} file(s) in {newdata_folder}.")
+        # If no new data, rely on the stable training file
+        if not os.path.isfile(base_train_path):
+            # If there's also no train_loan.csv, we must fail:
+            raise FileNotFoundError(
+                "No new data AND no existing train_loan.csv. Cannot produce loan_clean_latest.csv."
+            )
 
-    # 4. If a stable train_loan.csv exists, unify with new_data_df
-    if base_train_path and os.path.isfile(base_train_path):
-        print(f"Merging existing base training data from: {base_train_path}")
-        old_train_df = pd.read_csv(base_train_path)
-        # unify
-        df = pd.concat([old_train_df, new_data_df], ignore_index=True)
-        print(f"Combined old train + new data => total {df.shape[0]} rows.")
+        # Otherwise, proceed with only train_loan.csv for the final output
+        print(f"Using existing {base_train_path} for 'loan_clean_latest.csv' since no new data.")
+        df = pd.read_csv(base_train_path)
+        os.makedirs("data/processed", exist_ok=True)
+        processed_data_path = os.path.join("data", "processed", f"loan_clean_latest.csv")
+        df.to_csv(processed_data_path, index=False)
+        return
+
     else:
-        # If there's no stable train_loan yet, treat new_data as entire training data
-        df = new_data_df
-        print("No base training file found; using only new data as training set.")
+        # 3. We do have new data, read & unify with train_loan.csv if exists
+        df_list = []
+        for file in csv_files:
+            temp_df = pd.read_csv(file)
+            df_list.append(temp_df)
+        new_data_df = pd.concat(df_list, ignore_index=True)
+        print(f"Loaded {new_data_df.shape[0]} rows from {len(csv_files)} file(s) in {newdata_folder}.")
+
+        if os.path.isfile(base_train_path):
+            print(f"Merging existing base training data from: {base_train_path}")
+            old_train_df = pd.read_csv(base_train_path)
+            df = pd.concat([old_train_df, new_data_df], ignore_index=True)
+            print(f"Combined old train + new data => total {df.shape[0]} rows.")
+        else:
+            # If no stable train_loan yet, treat new_data as entire training data
+            df = new_data_df
+            print("No base training file found; using only new data as training set.")
 
     # 5. Remove duplicates if specified
     if remove_duplicates:

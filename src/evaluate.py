@@ -12,9 +12,11 @@ from sklearn.metrics import (
     roc_auc_score, accuracy_score, precision_score, recall_score,
     f1_score, classification_report
 )
+import warnings
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("LoanRisk")  
+warnings.filterwarnings("ignore", message="Could not find the number of physical cores")
 
 
 def load_latest_model(models_dir):

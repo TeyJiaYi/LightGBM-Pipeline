@@ -27,4 +27,4 @@ test_ratio: 0.2            # 20% final test dataset
 random_state: 42
 
 # Options: "none", "undersample", "oversample", "smote"
-balance_mode: "none"
+balance_mode: "undersample"
