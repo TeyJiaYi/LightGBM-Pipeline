@@ -43,7 +43,7 @@ stages:
     outs:
     - path: models/
       hash: md5
-      md5: 4a0c8740ee48e4762d21f0ce70e43241.dir
+      md5: f71be340c3e855c7256d9d65dd2d6ab1.dir
       size: 1762566
       nfiles: 1
   split_test:
@@ -84,7 +84,7 @@ stages:
       size: 228443
     - path: models/
       hash: md5
-      md5: 4a0c8740ee48e4762d21f0ce70e43241.dir
+      md5: f71be340c3e855c7256d9d65dd2d6ab1.dir
       size: 1762566
       nfiles: 1
     - path: src/evaluate.py
@@ -97,3 +97,18 @@ stages:
       md5: 222542c3623e391567df1e34f62e7b4a.dir
       size: 734
       nfiles: 1
+  bento_build:
+    cmd: python src/bento_build.py
+    deps:
+    - path: LoanRiskService.py
+      hash: md5
+      md5: b2e11e7b165f5479df0efa6853fe86e4
+      size: 670
+    - path: bentofile.yaml
+      hash: md5
+      md5: 5bcc92db72e9404d05431b9c2765bd28
+      size: 115
+    - path: src/bento_build.py
+      hash: md5
+      md5: 1cbe7282e544545427beb1ffb6e76dda
+      size: 738

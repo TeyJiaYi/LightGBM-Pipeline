@@ -44,7 +44,7 @@ stages:
     cmd: python src/bento_build.py
     deps:
       - src/bento_build.py
-      - LoanRiskService.py
+      - loanriskservice.py
       - bentofile.yaml
       
   k8s_deploy:

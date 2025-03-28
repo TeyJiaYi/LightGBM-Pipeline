@@ -1,19 +1,22 @@
+# loanriskservice.py
+
 import bentoml
 from bentoml.io import JSON
 import numpy as np
 
-# import the champion from "models:/LoanRiskModel@production"
-bentoml.mlflow.import_model("loan_risk_model", "models:/LoanRiskModel@production")
+# Retrieve the MLflow model from BentoML's model store
+model_ref = bentoml.mlflow.get("loan_risk_model:latest")
+LoanRiskRunner = model_ref.to_runner()
 
-svc = bentoml.Service(name="LoanRiskService")
-
-loan_model_ref = bentoml.mlflow.load_model("loan_risk_model:latest")
+# Create the Bento service and attach the runner
+svc = bentoml.Service("loanriskservice", runners=[LoanRiskRunner])
 
 @svc.api(input=JSON(), output=JSON())
-def predict(json_input):
-    feats = np.array([json_input["features"]], dtype=float)
-    if hasattr(loan_model_ref, "predict_proba"):
-        prob = loan_model_ref.predict_proba(feats)[:,1]
-    else:
-        prob = loan_model_ref.predict(feats)
-    return {"risk_score": float(prob[0])}
+def predict(input_data):
+    """
+    Expects input JSON of the form: {"features": [1.2, 3.4, ...]}.
+    """
+    features = np.array([input_data["features"]], dtype=float)
+    # Run inference on the model
+    result = LoanRiskRunner.run(features)
+    return {"risk_score": float(result[0])}
