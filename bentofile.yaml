@@ -1,7 +1,13 @@
-service: "LoanRiskService.py:svc"
+service: "loanriskservice.py:svc"
+
 python:
   packages:
     - bentoml
     - mlflow
     - lightgbm
     - numpy
+    - pandas     
+    - scikit-learn  
+
+include:
+  - loanriskservice.py

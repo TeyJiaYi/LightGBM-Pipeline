@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/515425559633390086/cb5d233212bb4b149a8c342d50888f8b/artifacts
+end_time: 1743161424476
+entry_point_name: ''
+experiment_id: '515425559633390086'
+lifecycle_stage: active
+run_id: cb5d233212bb4b149a8c342d50888f8b
+run_name: luminous-whale-681
+run_uuid: cb5d233212bb4b149a8c342d50888f8b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743161353899
+status: 3
+tags: []
+user_id: '60177'
