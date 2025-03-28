@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/515425559633390086/b4254d6ccae24985bfc1c814107c5717/artifacts
+end_time: 1743182716337
+entry_point_name: ''
+experiment_id: '515425559633390086'
+lifecycle_stage: active
+run_id: b4254d6ccae24985bfc1c814107c5717
+run_name: fortunate-ant-568
+run_uuid: b4254d6ccae24985bfc1c814107c5717
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743182650223
+status: 3
+tags: []
+user_id: '60177'

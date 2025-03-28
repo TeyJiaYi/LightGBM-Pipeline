@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/515425559633390086/debf0430536045aebe87fd3a0d559d89/artifacts
+end_time: 1743164133838
+entry_point_name: ''
+experiment_id: '515425559633390086'
+lifecycle_stage: active
+run_id: debf0430536045aebe87fd3a0d559d89
+run_name: bemused-shad-43
+run_uuid: debf0430536045aebe87fd3a0d559d89
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743164072020
+status: 3
+tags: []
+user_id: '60177'

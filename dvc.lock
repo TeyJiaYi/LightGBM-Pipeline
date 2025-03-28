@@ -43,7 +43,7 @@ stages:
     outs:
     - path: models/
       hash: md5
-      md5: fa9bd004d84af6076a8cb63d8d4343f0.dir
+      md5: 68b52c4cb600f7d81f0196cd921be870.dir
       size: 1762566
       nfiles: 1
   split_test:
@@ -84,7 +84,7 @@ stages:
       size: 228443
     - path: models/
       hash: md5
-      md5: fa9bd004d84af6076a8cb63d8d4343f0.dir
+      md5: 68b52c4cb600f7d81f0196cd921be870.dir
       size: 1762566
       nfiles: 1
     - path: src/evaluate.py
@@ -102,13 +102,28 @@ stages:
     deps:
     - path: bentofile.yaml
       hash: md5
-      md5: 5bcc92db72e9404d05431b9c2765bd28
-      size: 115
+      md5: 9442024cb4a4bdba82f2e430cb9ed250
+      size: 194
     - path: loanriskservice.py
       hash: md5
-      md5: 322cc90525958dfc252ab8ba3e1dcf1f
-      size: 704
+      md5: 2fe2eafe91b20a94b0665f295929084c
+      size: 665
     - path: src/bento_build.py
       hash: md5
-      md5: 81dfad0cf5d818b200e36a4f4b7e406d
-      size: 825
+      md5: 42bd1a3e119e3a8f6a2fee99d1203cda
+      size: 2596
+  k8s_deploy:
+    cmd: python src/deploy.py
+    deps:
+    - path: k8s/deployment.yaml
+      hash: md5
+      md5: b1d4a2d6f9c5aaf97eeeadb449bb5ca7
+      size: 493
+    - path: model_version.txt
+      hash: md5
+      md5: aab3238922bcc25a6f606eb525ffdc56
+      size: 2
+    - path: src/deploy.py
+      hash: md5
+      md5: 377b2f55a1951e1a3542c2dd2cd94017
+      size: 1189

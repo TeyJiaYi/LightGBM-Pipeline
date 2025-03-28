@@ -48,7 +48,9 @@ stages:
       - bentofile.yaml
       
   k8s_deploy:
-    cmd: bash deployment/k8s/deploy.sh
+    cmd: python src/deploy.py
     deps:
-      - deployment/k8s/deploy.sh
-      # The container image is ephemeral, so no direct DVC out here
+      - k8s/deployment.yaml
+      - model_version.txt
+      - src/deploy.py
+    

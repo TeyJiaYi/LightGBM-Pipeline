@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/515425559633390086/7f1739f99c7f42cda1bad591f151fdf9/artifacts
+end_time: 1743182346542
+entry_point_name: ''
+experiment_id: '515425559633390086'
+lifecycle_stage: active
+run_id: 7f1739f99c7f42cda1bad591f151fdf9
+run_name: overjoyed-hound-912
+run_uuid: 7f1739f99c7f42cda1bad591f151fdf9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743182263818
+status: 3
+tags: []
+user_id: '60177'

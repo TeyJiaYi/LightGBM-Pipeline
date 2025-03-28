@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/515425559633390086/b3224a0cd0d04449bb5b6c1c1a13c9fb/artifacts
+end_time: 1743181861325
+entry_point_name: ''
+experiment_id: '515425559633390086'
+lifecycle_stage: active
+run_id: b3224a0cd0d04449bb5b6c1c1a13c9fb
+run_name: charming-sloth-881
+run_uuid: b3224a0cd0d04449bb5b6c1c1a13c9fb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743181798751
+status: 3
+tags: []
+user_id: '60177'

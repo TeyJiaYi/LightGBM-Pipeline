@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loanrisk-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loanrisk
+  template:
+    metadata:
+      labels:
+        app: loanrisk
+    spec:
+      containers:
+      - name: loanrisk-container
+        # The MODEL_VERSION variable will be substituted by the pipeline.
+        image: jy323/loanriskservice:v14
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
