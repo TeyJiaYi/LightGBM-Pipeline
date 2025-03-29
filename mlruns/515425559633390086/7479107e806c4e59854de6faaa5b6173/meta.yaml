@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/515425559633390086/7479107e806c4e59854de6faaa5b6173/artifacts
+end_time: 1743254354627
+entry_point_name: ''
+experiment_id: '515425559633390086'
+lifecycle_stage: active
+run_id: 7479107e806c4e59854de6faaa5b6173
+run_name: clumsy-ox-531
+run_uuid: 7479107e806c4e59854de6faaa5b6173
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743254243216
+status: 3
+tags: []
+user_id: '60177'

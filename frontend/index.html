@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Risk Assessment Application</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        .high-risk {
+            background-color: #ffebee;
+            border: 1px solid #ef5350;
+        }
+        .low-risk {
+            background-color: #e8f5e9;
+            border: 1px solid #66bb6a;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Loan Application Risk Assessment</h1>
+        
+        <form id="loanApplicationForm">
+            <div class="form-group">
+                <label for="payFrequency">Payment Frequency</label>
+                <select id="payFrequency" name="payFrequency" required>
+                    <option value="">Select frequency</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="biweekly">Bi-weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="apr">Annual Percentage Rate (APR %)</label>
+                <input type="number" id="apr" name="apr" step="0.01" min="0" max="100" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="nPaidOff">Number of Previous Loans Paid Off</label>
+                <input type="number" id="nPaidOff" name="nPaidOff" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="loanAmount">Loan Amount ($)</label>
+                <input type="number" id="loanAmount" name="loanAmount" min="100" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="originallyScheduledPaymentAmount">Originally Scheduled Payment Amount ($)</label>
+                <input type="number" id="originallyScheduledPaymentAmount" name="originallyScheduledPaymentAmount" min="10" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="leadType">Lead Type</label>
+                <select id="leadType" name="leadType" required>
+                    <option value="">Select lead type</option>
+                    <option value="direct">Direct</option>
+                    <option value="affiliate">Affiliate</option>
+                    <option value="referral">Referral</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="leadCost">Lead Cost ($)</label>
+                <input type="number" id="leadCost" name="leadCost" min="0" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="hasCF">Has CF?</label>
+                <select id="hasCF" name="hasCF" required>
+                    <option value="">Select option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="region_code">Region Code (Optional)</label>
+                <input type="text" id="region_code" name="region_code">
+            </div>
+            
+            <button type="submit">Submit Application</button>
+        </form>
+        
+        <div id="resultContainer" class="result-container">
+            <h2 id="resultTitle">Risk Assessment Result</h2>
+            <p id="resultText"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loanApplicationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Collect form data
+            const formData = {
+                payFrequency: document.getElementById('payFrequency').value,
+                apr: parseFloat(document.getElementById('apr').value),
+                nPaidOff: parseInt(document.getElementById('nPaidOff').value),
+                loanAmount: parseFloat(document.getElementById('loanAmount').value),
+                originallyScheduledPaymentAmount: parseFloat(document.getElementById('originallyScheduledPaymentAmount').value),
+                leadType: document.getElementById('leadType').value,
+                leadCost: parseFloat(document.getElementById('leadCost').value),
+                hasCF: document.getElementById('hasCF').value,
+                region_code: document.getElementById('region_code').value
+            };
+            
+            // In a real application, you would send this data to your server
+            console.log('Form data:', formData);
+            
+            // Simulate sending to backend and getting response
+            // This is where you would typically make an API call
+            setTimeout(() => {
+                // Mock response - in real application this would come from your backend
+                const mockRiskAssessment = assessRisk(formData);
+                displayResult(mockRiskAssessment);
+            }, 1000);
+        });
+        
+        // This is just a mock function - in reality, your actual risk assessment would be on the server
+        function assessRisk(data) {
+            // This is just a simple example - your actual algorithm would be much more sophisticated
+            // and would run on your server, not in the browser
+            let riskScore = 0;
+            
+            // Higher APR indicates higher risk
+            if (data.apr > 15) riskScore += 2;
+            
+            // More paid off loans reduces risk
+            riskScore -= data.nPaidOff * 0.5;
+            
+            // Higher loan amounts increase risk
+            if (data.loanAmount > 10000) riskScore += 2;
+            else if (data.loanAmount > 5000) riskScore += 1;
+            
+            // Monthly payments might indicate lower risk
+            if (data.payFrequency === 'monthly') riskScore -= 1;
+            
+            // Having CF may reduce risk
+            if (data.hasCF === 'yes') riskScore -= 1;
+            
+            return {
+                isHighRisk: riskScore > 0,
+                score: riskScore
+            };
+        }
+        
+        function displayResult(result) {
+            const resultContainer = document.getElementById('resultContainer');
+            const resultText = document.getElementById('resultText');
+            
+            if (result.isHighRisk) {
+                resultContainer.className = 'result-container high-risk';
+                resultText.textContent = 'This loan application has been assessed as HIGH RISK.';
+            } else {
+                resultContainer.className = 'result-container low-risk';
+                resultText.textContent = 'This loan application has been assessed as LOW RISK.';
+            }
+            
+            resultContainer.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
