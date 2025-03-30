@@ -117,8 +117,8 @@ stages:
     deps:
     - path: k8s/bento_deployment.yaml
       hash: md5
-      md5: f56bcf2224de75fb0473f6583eef62f5
-      size: 582
+      md5: 4263d7e316cee7502e7bdb8b317f1663
+      size: 584
     - path: model_version.txt
       hash: md5
       md5: a87ff679a2f3e71d9181a67b7542122c
