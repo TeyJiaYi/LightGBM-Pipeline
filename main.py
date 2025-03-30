@@ -1,6 +1,6 @@
 import requests
 
-url = "http://localhost:3000/predict"
+url = "http://localhost:8001/predict"
 payload = {
     "payFrequency": 2,
     "apr": 0.35,

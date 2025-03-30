@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: loanrisk-deployment
+  name: loanrisk
+  namespace: ml
 spec:
   replicas: 1
   selector:
@@ -13,9 +14,21 @@ spec:
         app: loanrisk
     spec:
       containers:
-      - name: loanrisk-container
-        # The MODEL_VERSION variable will be substituted by the pipeline.
-        image: jy323/loanriskservice:${MODEL_VERSION}
+      - name: loanrisk
+        image: jy323/loanriskservice:v4
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loanrisk-service
+  namespace: ml
+spec:
+  selector:
+    app: loanrisk
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000

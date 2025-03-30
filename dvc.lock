@@ -43,7 +43,7 @@ stages:
     outs:
     - path: output/models/
       hash: md5
-      md5: 25f3cc1891e6ece93121b4077e44fd92.dir
+      md5: b295dea2fe1fce5d1a1fed024d9744d1.dir
       size: 1762566
       nfiles: 1
   split_test:
@@ -84,7 +84,7 @@ stages:
       size: 228443
     - path: output/models/
       hash: md5
-      md5: 25f3cc1891e6ece93121b4077e44fd92.dir
+      md5: b295dea2fe1fce5d1a1fed024d9744d1.dir
       size: 1762566
       nfiles: 1
     - path: src/evaluate.py
@@ -106,8 +106,8 @@ stages:
       size: 194
     - path: loanriskservice.py
       hash: md5
-      md5: aa282f8b563dddb8b8b5bae5930090a9
-      size: 512
+      md5: 6362634abc46969be96f0817d07f6dc8
+      size: 918
     - path: src/bento_build.py
       hash: md5
       md5: cde7acf95fe702ac163ef6f5a6936663
@@ -115,25 +115,25 @@ stages:
   k8s_deploy:
     cmd: python src/deploy.py
     deps:
-    - path: k8s/deployment.yaml
+    - path: k8s/bento_deployment.yaml
       hash: md5
-      md5: b1d4a2d6f9c5aaf97eeeadb449bb5ca7
-      size: 493
+      md5: f56bcf2224de75fb0473f6583eef62f5
+      size: 582
     - path: model_version.txt
       hash: md5
-      md5: 70efdf2ec9b086079795c442636b55fb
-      size: 2
+      md5: a87ff679a2f3e71d9181a67b7542122c
+      size: 1
     - path: src/deploy.py
       hash: md5
-      md5: 377b2f55a1951e1a3542c2dd2cd94017
-      size: 1189
+      md5: e8ebfa3b8bd457e86ca76f034b76e729
+      size: 1218
   seldon_deploy:
     cmd: python src/deploy.py
     deps:
     - path: k8s/seldon_deployment.yaml
       hash: md5
-      md5: 5e886a226cf8b4a3b73378fe55ebdb24
-      size: 371
+      md5: 4a390221b218c6f6d54264f48028c323
+      size: 612
     - path: model_version.txt
       hash: md5
       md5: eccbc87e4b5ce2fe28308fd9f2a7baf3

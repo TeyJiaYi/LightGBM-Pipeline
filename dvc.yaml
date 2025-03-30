@@ -47,10 +47,10 @@ stages:
       - loanriskservice.py
       - bentofile.yaml
       
-  seldon_deploy:
+  k8s_deploy:
     cmd: python src/deploy.py
     deps:
-      - k8s/seldon_deployment.yaml
+      - k8s/bento_deployment.yaml
       - model_version.txt
       - src/deploy.py
     
