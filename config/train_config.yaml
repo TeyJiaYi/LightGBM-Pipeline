@@ -30,8 +30,8 @@ grid_scoring: "roc_auc"
 
 
 # Naming and output directories
-model_dir: "models"
+model_dir: "output/models"
 model_prefix: "lightgbm_base_model"
 grid_model_prefix: "lightgbm_best_model"
-grid_search_results_dir: "grid_search_results"
+grid_search_results_dir: "output/grid_search_results"
 

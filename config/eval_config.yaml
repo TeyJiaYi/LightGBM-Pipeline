@@ -1,5 +1,5 @@
 test_data_path: "data/test/test_loan.csv"
-models_dir: "models"
+models_dir: "output/models"
 target_col: "risk_indicator"
 
 # For generating binary predictions from probabilities

@@ -27,11 +27,12 @@ def get_newest_image_tag(repo):
     Assumes the containerize command produces one new image.
     """
     output = subprocess.check_output(
-        ["docker", "images", repo, "--format", "{{.Tag}}"]
+        ["docker", "images", repo, "--format", "{{.Tag}}\t{{.CreatedAt}}"]
     ).decode().splitlines()
     if output:
         # We assume the first tag is the newest.
-        return output[0]
+        sorted_tags = sorted(output, key=lambda x: x.split("\t")[1], reverse=True)
+        return sorted_tags[0].split("\t")[0]
     raise ValueError(f"No images found for repository {repo}")
 
 def main():

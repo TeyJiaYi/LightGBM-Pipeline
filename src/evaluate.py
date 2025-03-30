@@ -17,7 +17,7 @@ from sklearn.metrics import (
     f1_score, classification_report
 )
 
-mlflow.set_tracking_uri("http://127.0.0.1:5000")  # or your MLflow server
+mlflow.set_tracking_uri("http://127.0.0.1:5000")  # or MLflow server
 mlflow.set_experiment("LoanRisk")
 warnings.filterwarnings("ignore", message="Could not find the number of physical cores")
 
@@ -95,7 +95,7 @@ def main(config_path):
     y_test = df[target_col]
 
     # load new local model
-    models_dir = config.get("models_dir","models")
+    models_dir = config.get("models_dir","output/models")
     new_model, new_path = load_new_model_artifact(models_dir)
 
     # predictions

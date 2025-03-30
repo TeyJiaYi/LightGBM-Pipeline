@@ -85,7 +85,7 @@ def train_grid_search(X_train, y_train, X_val, y_val, config, random_state, time
     y_pred = best_model.predict_proba(X_val)[:, 1]
     
     # Save the best model artifact using the filename from YAML and the timestamp
-    model_dir = config.get("model_dir", "models")
+    model_dir = config.get("model_dir", "output/models")
     os.makedirs(model_dir, exist_ok=True)
     grid_model_prefix = config.get("grid_model_prefix", "lightgbm_best_model")
     model_path = os.path.join(model_dir, f"{grid_model_prefix}_{timestamp}.pkl")
@@ -103,7 +103,7 @@ def train_grid_search(X_train, y_train, X_val, y_val, config, random_state, time
     
     # Save grid search results to a CSV file and log as an artifact
     grid_results_df = pd.DataFrame(grid.cv_results_)
-    grid_results_dir = config.get("grid_search_results_dir", "grid_search_results")
+    grid_results_dir = config.get("grid_search_results_dir", "output/grid_search_results")
     os.makedirs(grid_results_dir, exist_ok=True)
     grid_results_path = os.path.join(grid_results_dir, f"grid_search_results_{timestamp}.csv")
     grid_results_df.to_csv(grid_results_path, index=False)
@@ -145,9 +145,9 @@ def main(config_path):
     else:
         print("Training with default parameters...")
         model, y_pred = train_default(X_train, y_train, X_val, y_val, config, random_state, timestamp)
-        os.makedirs(config.get("model_dir", "models"), exist_ok=True)
+        os.makedirs(config.get("model_dir", "output/models"), exist_ok=True)
         model_prefix = config.get("model_prefix", "lightgbm_model")
-        model_path = os.path.join(config.get("model_dir", "models"), f"{model_prefix}_{timestamp}.txt")
+        model_path = os.path.join(config.get("model_dir", "output/models"), f"{model_prefix}_{timestamp}.txt")
         model.save_model(model_path)
         mlflow.lightgbm.log_model(model, "model", 
                                   registered_model_name="LoanRiskModel", 

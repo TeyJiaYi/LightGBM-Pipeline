@@ -30,20 +30,20 @@ stages:
     deps:
     - path: config/train_config.yaml
       hash: md5
-      md5: deac2a3baae9992767537b23d65f0215
-      size: 757
+      md5: eb260086fa6e8192e18b16c5a81eecba
+      size: 771
     - path: data/processed/loan_clean_latest.csv
       hash: md5
       md5: b114bff6f40d6938fcbf03fb89a1cffe
       size: 913195
     - path: src/train_model.py
       hash: md5
-      md5: e67ddab918e3bd3efccae89bc8d7fec2
-      size: 7487
+      md5: ab8b3f3377c41c02cbd687bf5bf70a05
+      size: 7515
     outs:
-    - path: models/
+    - path: output/models/
       hash: md5
-      md5: 45467f6a9a2fff4ec5fe1d042ed882e4.dir
+      md5: 25f3cc1891e6ece93121b4077e44fd92.dir
       size: 1762566
       nfiles: 1
   split_test:
@@ -76,21 +76,21 @@ stages:
     deps:
     - path: config/eval_config.yaml
       hash: md5
-      md5: 1912e28409754ac5cc088b8df67c4a96
-      size: 551
+      md5: db6ebaa5ff2f811982e2e9e03e01654b
+      size: 558
     - path: data/test/test_loan.csv
       hash: md5
       md5: 088dc9c5c02b17a092027aedc4cde746
       size: 228443
-    - path: models/
+    - path: output/models/
       hash: md5
-      md5: 45467f6a9a2fff4ec5fe1d042ed882e4.dir
+      md5: 25f3cc1891e6ece93121b4077e44fd92.dir
       size: 1762566
       nfiles: 1
     - path: src/evaluate.py
       hash: md5
-      md5: 69e2c561a7979ed487e927076388bf70
-      size: 7717
+      md5: 1645191b371b9f78bc086c8904e0857b
+      size: 7719
     outs:
     - path: reports/
       hash: md5
@@ -106,12 +106,12 @@ stages:
       size: 194
     - path: loanriskservice.py
       hash: md5
-      md5: 2fe2eafe91b20a94b0665f295929084c
-      size: 665
+      md5: aa282f8b563dddb8b8b5bae5930090a9
+      size: 512
     - path: src/bento_build.py
       hash: md5
-      md5: 42bd1a3e119e3a8f6a2fee99d1203cda
-      size: 2596
+      md5: cde7acf95fe702ac163ef6f5a6936663
+      size: 2716
   k8s_deploy:
     cmd: python src/deploy.py
     deps:
@@ -127,3 +127,18 @@ stages:
       hash: md5
       md5: 377b2f55a1951e1a3542c2dd2cd94017
       size: 1189
+  seldon_deploy:
+    cmd: python src/deploy.py
+    deps:
+    - path: k8s/seldon_deployment.yaml
+      hash: md5
+      md5: 5e886a226cf8b4a3b73378fe55ebdb24
+      size: 371
+    - path: model_version.txt
+      hash: md5
+      md5: eccbc87e4b5ce2fe28308fd9f2a7baf3
+      size: 1
+    - path: src/deploy.py
+      hash: md5
+      md5: 38c9138734c81b26f819cb13c6e0ecb8
+      size: 1041

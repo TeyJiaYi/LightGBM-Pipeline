@@ -27,7 +27,7 @@ stages:
       - config/train_config.yaml
       - data/processed/loan_clean_latest.csv
     outs:
-      - models/
+      - output/models/
 
   # 4) Evaluate stage (final hold-out check):
   evaluate:
@@ -35,7 +35,7 @@ stages:
     deps:
       - src/evaluate.py
       - config/eval_config.yaml
-      - models/
+      - output/models/
       - data/test/test_loan.csv  # stable final test
     outs:
       - reports/
@@ -47,10 +47,10 @@ stages:
       - loanriskservice.py
       - bentofile.yaml
       
-  k8s_deploy:
+  seldon_deploy:
     cmd: python src/deploy.py
     deps:
-      - k8s/deployment.yaml
+      - k8s/seldon_deployment.yaml
       - model_version.txt
       - src/deploy.py
     

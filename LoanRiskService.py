@@ -1,33 +1,32 @@
-# loanriskservice.py
-
 import bentoml
-from bentoml.io import JSON
+import pandas as pd
 import numpy as np
-from fastapi.middleware.cors import CORSMiddleware
+from bentoml.io import JSON
 
-# Load model from MLflow and create a runner
+# Load model
 model_ref = bentoml.mlflow.get("loan_risk_model:latest")
-runner = model_ref.to_runner()
+model_runner = model_ref.to_runner()
 
-# Create BentoML service using new decorator-based API
-svc = bentoml.Service(name="loanriskservice", runners=[runner])
-
-from fastapi.middleware.cors import CORSMiddleware
-
-svc.mount_asgi_app(CORSMiddleware(
-    app=svc.asgi_app,
-    allow_origins=["*"],  # Or your frontend origin
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-))
-
+svc = bentoml.Service("LoanRiskService", runners=[model_runner])
 
 @svc.api(input=JSON(), output=JSON())
-async def predict(input_data):
-    """
-    Expects input JSON of the form: {"features": [1.2, 3.4, ...]}.
-    """
-    features = np.array([input_data["features"]], dtype=float)
-    result = await runner.async_run(features)
+async def predict(input_data: dict) -> dict:
+    df = pd.DataFrame([input_data])
+
+    # Cast to correct types as per MLflow schema
+    cast_types = {
+        "payFrequency": "int64",
+        "apr": "float64",
+        "nPaidOff": "float64",  # optional column
+        "loanAmount": "float64",
+        "originallyScheduledPaymentAmount": "float64",
+        "leadType": "int64",
+        "leadCost": "int64",
+        "hasCF": "int64",
+        "region_code": "int64"
+    }
+
+    df = df.astype(cast_types)
+
+    result = await model_runner.async_run(df)
     return {"risk_score": float(result[0])}
