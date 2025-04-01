@@ -17,6 +17,7 @@ def main(config_path):
 
 
     drop_cols = config.get("drop_columns",[])
+    df.drop(columns=['prediction'], inplace=True, errors='ignore')
     remove_duplicates = config.get("remove_duplicates", True)
     newdata_folder = config.get("newdata_folder", "data/raw/new")
 
