@@ -9,6 +9,8 @@ import shutil
 import glob
 import pandas as pd
 
+
+
 # === Config ===
 EVAL_CONFIG_PATH = "config/eval_realworld.yaml"
 BUFFER_DIR = "data/retrain_buffer"
@@ -33,7 +35,7 @@ def update_eval_config(**context):
         "last_fetch_date": "2020-01-01",  # default for first run
         "prediction_prefix": "prediction/",
         "truth_prefix": "history/",
-        "prometheus_push_url": "http://localhost:5000/metrics",
+        "prometheus_push_url": "http://localhost:5001/metrics",
         "columns_needed": ["loan_id", "loanStatus"],
         "positive_loanstatus": ["Paid Off Loan"],
         "negative_loanstatus": [

@@ -93,5 +93,7 @@ async def predict(input_data: dict) -> dict:
     prediction = int(result[0])
     save_prediction_to_db(input_data, prediction)
 
+    risk = "Low Risk" if prediction == 1 else "High Risk"
 
-    return {"risk_score": int(result[0])}
+    
+    return {"risk": risk}

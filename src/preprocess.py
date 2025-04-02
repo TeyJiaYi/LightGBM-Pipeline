@@ -17,7 +17,7 @@ def main(config_path):
 
 
     drop_cols = config.get("drop_columns",[])
-    df.drop(columns=['prediction'], inplace=True, errors='ignore')
+    
     remove_duplicates = config.get("remove_duplicates", True)
     newdata_folder = config.get("newdata_folder", "data/raw/new")
 
@@ -40,6 +40,7 @@ def main(config_path):
         # Otherwise, proceed with only train_loan.csv for the final output
         print(f"Using existing {base_train_path} for 'loan_clean_latest.csv' since no new data.")
         df = pd.read_csv(base_train_path)
+        df.drop(columns=['prediction'], inplace=True, errors='ignore')
         os.makedirs("data/processed", exist_ok=True)
         processed_data_path = os.path.join("data", "processed", f"loan_clean_latest.csv")
         df.to_csv(processed_data_path, index=False)
@@ -86,7 +87,7 @@ def main(config_path):
 
     positive_loanstatus = set(positive_loanstatus_list)
     negative_loanstatus = set(negative_loanstatus_list)
-
+    
     df.dropna(subset=['loanStatus'], inplace=True)
     allowed_statuses = positive_loanstatus.union(negative_loanstatus)
     df = df[df['loanStatus'].isin(allowed_statuses)]
@@ -99,7 +100,7 @@ def main(config_path):
     )
 
     df.drop(columns='loanStatus', inplace=True)
-    
+    df.drop(columns=['prediction'], inplace=True, errors='ignore')
 
     df.drop(columns=drop_cols, inplace=True, errors="ignore")
 

@@ -1,7 +1,7 @@
 aliases:
-  candidate: '4'
-  production: '4'
-creation_timestamp: 1743346935878
+  candidate: '1'
+  production: '1'
+creation_timestamp: 1743523025533
 description: ''
-last_updated_timestamp: 1743354738992
+last_updated_timestamp: 1743523052755
 name: LoanRiskModel

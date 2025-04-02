@@ -7,6 +7,7 @@ import boto3
 import os
 import yaml
 
+
 # === Config ===
 ROOT_DIR = os.getcwd()
 DB_PATH = os.path.join(ROOT_DIR, "loan_predictions.db")

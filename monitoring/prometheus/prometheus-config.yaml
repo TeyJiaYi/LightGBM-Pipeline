@@ -9,5 +9,6 @@ data:
       scrape_interval: 15s
     scrape_configs:
       - job_name: 'bentoml'
+        metrics_path: '/metrics'
         static_configs:
           - targets: ['loanrisk-service.ml.svc.cluster.local:3000']
