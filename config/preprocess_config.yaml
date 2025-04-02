@@ -1,31 +1,24 @@
+newdata_folder: data/raw/new               # Folder containing new raw loan data files (if any)
+base_train_path: data/processed/train_loan.csv
 remove_duplicates: true
-newdata_folder: "data/raw/new"
-
-# base train dataset
-base_train_path: "data/processed/train_loan.csv" 
+positive_loanstatus:
+  - "Paid Off Loan"
+negative_loanstatus:
+  - "External Collection"
+  - "Internal Collection"
+  - "Settlement Paid Off"
+  - "Settled Bankruptcy"
+  - "Charged Off"
+  - "Charged Off Paid Off"
+  - "Settlement Pending Paid Off"
 
 drop_columns:
   - loanId
   - anon_ssn
-  - clarityFraudId
+  - approved
   - originated
   - originatedDate
+  - applicationDate
   - isFunded
   - fpStatus
-  - approved
-  - applicationDate
-
-# target variable
-positive_loanstatus:
-- "Paid Off Loan"
-
-negative_loanstatus:
-- "External Collection"
-- "Internal Colelction"
-- "Returned Item"
-- "Settlement Paid Off"
-- "Settled Bankruptcy"
-- "Charged Off"
-- "Charged Off Paid Off"
-
-
+  - clarityFraudId

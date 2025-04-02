@@ -1,174 +1,161 @@
-import datetime
 import yaml
 import pandas as pd
+import numpy as np
 import os
 import sys
-import glob
-import numpy as np
-from sklearn.preprocessing import LabelEncoder
-
-# src/preprocess.py
 
 def main(config_path):
-    
-    # load config YAML
+    """Preprocess new loan data and merge with existing training data."""
+    # Load configuration
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
 
-
-    drop_cols = config.get("drop_columns",[])
-    
+    drop_cols = config.get("drop_columns", [])
     remove_duplicates = config.get("remove_duplicates", True)
     newdata_folder = config.get("newdata_folder", "data/raw/new")
+    base_train_path = config.get("base_train_path", "data/processed/train_loan.csv")
 
-    # stable training set from split_test
-    base_train_path = config.get("base_train_path", "train_loan.csv")
-
-
-    # 2. Gather CSVs from newdata_folder
-    csv_files = glob.glob(os.path.join(newdata_folder, "*.csv"))
-    if not csv_files:
-        print(f"No new CSV data found in: {newdata_folder}")
-
-        # If no new data, rely on the stable training file
+    # 1. Gather any new data files from the specified folder
+    new_files = []
+    if os.path.isdir(newdata_folder):
+        new_files = [os.path.join(newdata_folder, f) for f in os.listdir(newdata_folder) if f.endswith(".csv")]
+    if not new_files:
+        print(f"No new CSV files found in {newdata_folder}.")
+        # If no new data, ensure we have an existing base train file to use
         if not os.path.isfile(base_train_path):
-            # If there's also no train_loan.csv, we must fail:
-            raise FileNotFoundError(
-                "No new data AND no existing train_loan.csv. Cannot produce loan_clean_latest.csv."
-            )
-
-        # Otherwise, proceed with only train_loan.csv for the final output
-        print(f"Using existing {base_train_path} for 'loan_clean_latest.csv' since no new data.")
-        df = pd.read_csv(base_train_path)
-        df.drop(columns=['prediction'], inplace=True, errors='ignore')
-        os.makedirs("data/processed", exist_ok=True)
-        processed_data_path = os.path.join("data", "processed", f"loan_clean_latest.csv")
-        df.to_csv(processed_data_path, index=False)
+            raise FileNotFoundError("No new data provided and no existing train_loan.csv found. Cannot preprocess data.")
+        # Use the existing train_loan.csv as the latest processed data
+        df_train = pd.read_csv(base_train_path)
+        # Drop any columns not needed (e.g., prediction columns from prior runs)
+        df_train.drop(columns=["prediction"], inplace=True, errors="ignore")
+        output_path = os.path.join("data", "processed", "loan_clean_latest.csv")
+        df_train.to_csv(output_path, index=False)
+        print(f"No new data. Copied existing training data to {output_path}.")
         return
 
+    # 2. Load and concatenate all new data CSV files
+    df_new_list = [pd.read_csv(file) for file in new_files]
+    new_data_df = pd.concat(df_new_list, ignore_index=True)
+    print(f"Loaded {new_data_df.shape[0]} new rows from {len(new_files)} file(s) in {newdata_folder}.")
+
+    # 3. Optionally merge with existing training data (for reference or removing overlaps)
+    old_train_df = None
+    if os.path.isfile(base_train_path):
+        old_train_df = pd.read_csv(base_train_path)
+        print(f"Existing training data loaded from {base_train_path} ({old_train_df.shape[0]} rows).")
     else:
-        # 3. We do have new data, read & unify with train_loan.csv if exists
-        df_list = []
-        for file in csv_files:
-            temp_df = pd.read_csv(file)
-            df_list.append(temp_df)
-        new_data_df = pd.concat(df_list, ignore_index=True)
-        print(f"Loaded {new_data_df.shape[0]} rows from {len(csv_files)} file(s) in {newdata_folder}.")
+        print("No existing training data found. New data will serve as the training set.")
 
-        if os.path.isfile(base_train_path):
-            print(f"Merging existing base training data from: {base_train_path}")
-            old_train_df = pd.read_csv(base_train_path)
-            df = pd.concat([old_train_df, new_data_df], ignore_index=True)
-            print(f"Combined old train + new data => total {df.shape[0]} rows.")
-        else:
-            # If no stable train_loan yet, treat new_data as entire training data
-            df = new_data_df
-            print("No base training file found; using only new data as training set.")
-
-    # 5. Remove duplicates if specified
+    # 4. Remove duplicates in new data (and between new and old data if needed)
     if remove_duplicates:
-        before = len(df)
-        df.drop_duplicates(inplace=True)
-        after = len(df)
-        print(f"Dropped {before - after} duplicates; final {after} rows.")
+        before_new = len(new_data_df)
+        new_data_df.drop_duplicates(inplace=True)
+        after_new = len(new_data_df)
+        if after_new < before_new:
+            print(f"Removed {before_new - after_new} duplicate rows in new data; {after_new} new rows remain.")
+        # Also remove any duplicates that appear in both old and new (by full row match)
+        if old_train_df is not None:
+            combined = pd.concat([old_train_df, new_data_df], ignore_index=True)
+            combined.drop_duplicates(inplace=True)
+            # Determine how many new_data rows were dropped by duplicates with old data
+            new_data_combined = combined.iloc[old_train_df.shape[0]:] if old_train_df.shape[0] > 0 else combined
+            if len(new_data_combined) < len(new_data_df):
+                removed = len(new_data_df) - len(new_data_combined)
+                print(f"Removed {removed} new rows that duplicated existing training data.")
+            new_data_df = new_data_combined if old_train_df.shape[0] == 0 else new_data_combined
 
-    default_positive_statuses = ["Paid Off Loan"]
-    default_negative_statuses = [
-        "External Collection", 
-        "Internal Collection",
-        "Returned Item",
-        "Settlement Paid Off",
-        "Settled Bankruptcy",
-        "Charged Off",
-        "Charged Off Paid Off"
+    # 5. Filter new data by loanStatus (use same allowed statuses as in initial training)
+    default_positive = ["Paid Off Loan", "Pending Paid Off"]
+    default_negative = [
+        "External Collection", "Internal Collection", 
+        "Settlement Paid Off", "Settled Bankruptcy",
+        "Charged Off", "Charged Off Paid Off",
+        "Settlement Pending Paid Off"
     ]
-    positive_loanstatus_list = config.get("positive_loanstatus",default_positive_statuses)
-    negative_loanstatus_list = config.get("negative_loanstatus", default_negative_statuses)
+    positive_statuses = set(config.get("positive_loanstatus", default_positive))
+    negative_statuses = set(config.get("negative_loanstatus", default_negative))
+    allowed_statuses = positive_statuses.union(negative_statuses)
+    new_data_df.dropna(subset=["loanStatus"], inplace=True)
+    new_data_df = new_data_df[new_data_df["loanStatus"].isin(allowed_statuses)]
+    print(f"Filtered new data to {new_data_df.shape[0]} rows with allowed loanStatus values.")
 
-    positive_loanstatus = set(positive_loanstatus_list)
-    negative_loanstatus = set(negative_loanstatus_list)
-    
-    df.dropna(subset=['loanStatus'], inplace=True)
-    allowed_statuses = positive_loanstatus.union(negative_loanstatus)
-    df = df[df['loanStatus'].isin(allowed_statuses)]
+    # 6. Create risk_indicator for new data (1 if positive outcome, else 0)
+    new_data_df["risk_indicator"] = np.where(new_data_df["loanStatus"].isin(positive_statuses), 1, 0)
 
-    # 4. Create the new risk indicator (binary label)
-    df['risk_indicator'] = np.where(
-    df['loanStatus'].isin(positive_loanstatus), 
-    1,  # Positive outcome
-    0   # Negative outcome
-    )
+    # 7. Drop unwanted columns from new data
+    new_data_df.drop(columns=drop_cols, inplace=True, errors="ignore")
+    new_data_df.drop(columns=["prediction"], inplace=True, errors="ignore")  # drop any prediction column if present
 
-    df.drop(columns='loanStatus', inplace=True)
-    df.drop(columns=['prediction'], inplace=True, errors='ignore')
-
-    df.drop(columns=drop_cols, inplace=True, errors="ignore")
-
-    
-    # Encoding fot the payfrequency
-    if "payFrequency" in df.columns:
-        mode_value = df["payFrequency"].mode()[0]
-        df["payFrequency"] = df["payFrequency"].fillna(mode_value)
-
-        payfreq_map = {
-            "W": 0,  # Weekly
-            "B": 1,  # Bi-weekly
-            "S": 2,  # Semi-monthly
-            "M": 3,  # Monthly
-            "I": 4   # Irregular
+    # 8. Apply same encoding and feature engineering to new data as done for training data
+    # Encode payFrequency
+    if "payFrequency" in new_data_df.columns:
+        if new_data_df["payFrequency"].mode().size > 0:
+            mode_val = new_data_df["payFrequency"].mode()[0]
+        else:
+            mode_val = "W"
+        new_data_df["payFrequency"] = new_data_df["payFrequency"].fillna(mode_val)
+        payfreq_map = {"W": 0, "B": 1, "S": 2, "M": 3, "I": 4}
+        new_data_df["payFrequency"] = new_data_df["payFrequency"].map(payfreq_map)
+    # Encode leadType with fixed mapping
+    if "leadType" in new_data_df.columns:
+        new_data_df["leadType"] = new_data_df["leadType"].fillna("unknown")
+        leadtype_map = {
+            "bvMandatory": 0, "lead": 1, "california": 2, "organic": 3, "rc_returning": 4,
+            "prescreen": 5, "express": 6, "repeat": 7, "instant-offer": 8, "unknown": 9
         }
-        df["payFrequency"] = df["payFrequency"].map(payfreq_map)
+        new_data_df["leadType"] = new_data_df["leadType"].apply(lambda x: x if x in leadtype_map else "unknown")
+        new_data_df["leadType"] = new_data_df["leadType"].map(leadtype_map)
+    # Map state to region_code
+    if "state" in new_data_df.columns:
+        new_data_df["state"] = new_data_df["state"].str.upper()
+        region_map = {
+            # (same mapping as in split_test.py)
+            'CT': 'Northeast', 'ME': 'Northeast', 'MA': 'Northeast', 'NH': 'Northeast', 'RI': 'Northeast',
+            'VT': 'Northeast', 'NJ': 'Northeast', 'NY': 'Northeast', 'PA': 'Northeast',
+            'IN': 'Midwest', 'IL': 'Midwest', 'MI': 'Midwest', 'OH': 'Midwest', 'WI': 'Midwest',
+            'IA': 'Midwest', 'KS': 'Midwest', 'MN': 'Midwest', 'MO': 'Midwest', 'NE': 'Midwest',
+            'ND': 'Midwest', 'SD': 'Midwest',
+            'DE': 'South', 'FL': 'South', 'GA': 'South', 'MD': 'South', 'NC': 'South', 'SC': 'South',
+            'VA': 'South', 'WV': 'South', 'AL': 'South', 'KY': 'South', 'MS': 'South', 'TN': 'South',
+            'AR': 'South', 'LA': 'South', 'OK': 'South', 'TX': 'South', 'DC': 'South',
+            'AZ': 'West', 'CO': 'West', 'ID': 'West', 'MT': 'West', 'NV': 'West', 'NM': 'West',
+            'UT': 'West', 'WY': 'West', 'AK': 'West', 'CA': 'West', 'HI': 'West', 'OR': 'West', 'WA': 'West'
+        }
+        region_code_map = {'Northeast': 1, 'Midwest': 2, 'South': 3, 'West': 4}
+        new_data_df["region_code"] = new_data_df["state"].map(lambda x: region_code_map.get(region_map.get(x), 0))
+        new_data_df.drop(columns=["state"], inplace=True)
+    # Compute interest_pct feature
+    if "loanAmount" in new_data_df.columns and "originallyScheduledPaymentAmount" in new_data_df.columns:
+        new_data_df["interest_pct"] = new_data_df["originallyScheduledPaymentAmount"].fillna(new_data_df["loanAmount"]) / new_data_df["loanAmount"]
+        new_data_df["interest_pct"] = new_data_df["interest_pct"].replace([np.inf, -np.inf], np.nan) - 1
+        new_data_df["interest_pct"] = new_data_df["interest_pct"].fillna(0)
+    # Drop loanStatus column from new data after creating risk_indicator
+    new_data_df.drop(columns=["loanStatus"], inplace=True, errors="ignore")
 
-    if "leadType" in df.columns:
-        df["leadType"] = df["leadType"].fillna("unknown")
-        encoder = LabelEncoder()
-        df["leadType"] = encoder.fit_transform(df["leadType"])
+    # 9. Merge new processed data with existing training data
+    if old_train_df is not None:
+        # Ensure old training data has no 'prediction' or other unused columns
+        old_train_df.drop(columns=["prediction"], inplace=True, errors="ignore")
+        # Concatenate old and new data (they should have identical columns now)
+        df_combined = pd.concat([old_train_df, new_data_df], ignore_index=True)
+        # Remove any duplicates after merging (if the same loan appears in old and new)
+        if remove_duplicates:
+            before_merge = len(df_combined)
+            df_combined.drop_duplicates(inplace=True)
+            after_merge = len(df_combined)
+            if after_merge < before_merge:
+                print(f"Removed {before_merge - after_merge} duplicate rows after merging new data with existing training data.")
+    else:
+        df_combined = new_data_df
 
-    region_map = {
-    # Northeast
-    'CT': 'Northeast', 'ME': 'Northeast', 'MA': 'Northeast', 'NH': 'Northeast', 'RI': 'Northeast',
-    'VT': 'Northeast', 'NJ': 'Northeast', 'NY': 'Northeast', 'PA': 'Northeast',
-    
-    # Midwest
-    'IN': 'Midwest', 'IL': 'Midwest', 'MI': 'Midwest', 'OH': 'Midwest', 'WI': 'Midwest',
-    'IA': 'Midwest', 'KS': 'Midwest', 'MN': 'Midwest', 'MO': 'Midwest', 'NE': 'Midwest',
-    'ND': 'Midwest', 'SD': 'Midwest',
-    
-    # South
-    'DE': 'South', 'FL': 'South', 'GA': 'South', 'MD': 'South', 'NC': 'South',
-    'SC': 'South', 'VA': 'South', 'WV': 'South', 'AL': 'South', 'KY': 'South',
-    'MS': 'South', 'TN': 'South', 'AR': 'South', 'LA': 'South', 'OK': 'South',
-    'TX': 'South', 'DC': 'South',
-    
-    # West
-    'AZ': 'West', 'CO': 'West', 'ID': 'West', 'MT': 'West', 'NV': 'West',
-    'NM': 'West', 'UT': 'West', 'WY': 'West', 'AK': 'West', 'CA': 'West',
-    'HI': 'West', 'OR': 'West', 'WA': 'West'
-    }
-
-    # 2) Define numeric codes
-    region_code_map = {
-        'Northeast': 1,
-        'Midwest': 2,
-        'South': 3,
-        'West': 4
-    }
-
-    if "state" in df.columns:
-        df["state"] = df["state"].str.upper()
-        df["region_code"] = df["state"].map(lambda x: region_code_map.get(region_map.get(x), None))
-        df.drop(columns=["state"], inplace=True)
-
-    # save the file
+    # 10. Save the updated processed dataset for model training
     os.makedirs("data/processed", exist_ok=True)
-    processed_data_path = os.path.join("data", "processed", f"loan_clean_latest.csv")
-    df.to_csv(processed_data_path, index=False)
-
-    print(f"Preprocessing complete. Overwrote => {processed_data_path} with merged data, total rows={len(df)}")
+    output_path = os.path.join("data", "processed", "loan_clean_latest.csv")
+    df_combined.to_csv(output_path, index=False)
+    print(f"Preprocessing complete. Saved merged data to {output_path} (total {df_combined.shape[0]} rows).")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python src/preprocess.py config/preprocess_config.yaml")
+        print("Usage: python preprocess.py config/preprocess_config.yaml")
         sys.exit(1)
-    config_file = sys.argv[1]
-    main(config_file)
+    main(sys.argv[1])

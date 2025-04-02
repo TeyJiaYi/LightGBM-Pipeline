@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: loanrisk
-        image: jy323/loanriskservice:v1
+        image: jy323/loanriskservice:v7
         imagePullPolicy: Always
         ports:
         - containerPort: 3000

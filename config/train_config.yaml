@@ -1,24 +1,16 @@
-# dataset path
-dataset_path: "data/processed/loan_clean_latest.csv"
-target_col: "risk_indicator"
-
+dataset_path: data/processed/loan_clean_latest.csv
+target_col: risk_indicator
 test_size: 0.3
 random_state: 42
 
-# Default LightGBM hyperparameters (for non-grid search training)
+# LightGBM hyperparameters (default training)
 learning_rate: 0.05
 num_leaves: 31
 num_boost_round: 1000
-early_stopping_rounds: 100
-verbose: -1
+early_stopping_rounds: 50
 
-# Threshold for binary classification metrics
-threshold: 0.5
-
-
-
-# Grid search settings
-grid_search: true
+# Hyperparameter tuning settings
+grid_search: true             # Set true to perform grid search
 param_grid:
   learning_rate: [0.01, 0.05, 0.1]
   num_leaves: [15, 31, 63]
@@ -27,11 +19,11 @@ grid_verbose: 1
 grid_n_jobs: -1
 grid_scoring: "roc_auc"
 
-
-
-# Naming and output directories
-model_dir: "output/models"
-model_prefix: "lightgbm_base_model"
-grid_model_prefix: "lightgbm_best_model"
-grid_search_results_dir: "output/grid_search_results"
-
+# Model output and MLflow settings
+model_dir: output/models
+model_prefix: lightgbm_model
+grid_model_prefix: lightgbm_best_model
+grid_search_results_dir: output/grid_search_results
+threshold: 0.5                  # Probability threshold for classifying as positive
+tracking_uri: http://127.0.0.1:5000 # Mlflow ui 
+experiment_name: LoanRisk

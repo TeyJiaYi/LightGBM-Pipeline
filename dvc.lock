@@ -5,12 +5,12 @@ stages:
     deps:
     - path: config/preprocess_config.yaml
       hash: md5
-      md5: d931ec43806201a91c91f189dbfed214
-      size: 545
+      md5: 1faee154dd7e4b547e08f3424f0ec7a9
+      size: 586
     - path: data/processed/train_loan.csv
       hash: md5
-      md5: b114bff6f40d6938fcbf03fb89a1cffe
-      size: 913195
+      md5: a77dcbfde935aa38b4f2930c41529d67
+      size: 1633771
     - path: data/raw/new/
       hash: md5
       md5: d751713988987e9331980363e24189ce.dir
@@ -18,41 +18,41 @@ stages:
       nfiles: 0
     - path: src/preprocess.py
       hash: md5
-      md5: d0ee0f992e26d376e264ecb139811b3e
-      size: 6576
+      md5: f67c07eeab20fb0dffa132544f1d851f
+      size: 9394
     outs:
     - path: data/processed/loan_clean_latest.csv
       hash: md5
-      md5: b114bff6f40d6938fcbf03fb89a1cffe
-      size: 913195
+      md5: ff474699610bf3414671fe3d8897a996
+      size: 1598179
   train:
     cmd: python src/train_model.py config/train_config.yaml
     deps:
     - path: config/train_config.yaml
       hash: md5
-      md5: eb260086fa6e8192e18b16c5a81eecba
-      size: 771
+      md5: 6bf345593cd5d2380da17aea693ffd5b
+      size: 848
     - path: data/processed/loan_clean_latest.csv
       hash: md5
-      md5: b114bff6f40d6938fcbf03fb89a1cffe
-      size: 913195
+      md5: ff474699610bf3414671fe3d8897a996
+      size: 1598179
     - path: src/train_model.py
       hash: md5
-      md5: ab8b3f3377c41c02cbd687bf5bf70a05
-      size: 7515
+      md5: bb25929b960d71ee19253a830bf97e30
+      size: 7992
     outs:
     - path: output/models/
       hash: md5
-      md5: 136347e76cc86f23a0023edb70d8df83.dir
-      size: 1762566
+      md5: cfd1f8fe6d03aa33f0825a2b855bf94f.dir
+      size: 6851963
       nfiles: 1
   split_test:
     cmd: python src/split_test.py config/split_test_config.yaml
     deps:
     - path: config/split_test_config.yaml
       hash: md5
-      md5: 955077264f4ab5105dcd922fb0bd2f32
-      size: 626
+      md5: bd55b4d94dadcbb9ddf2b8b9305531f1
+      size: 756
     - path: data/raw/original/
       hash: md5
       md5: f9a74faa03ac9af15a5db650e1e4cf8e.dir
@@ -60,17 +60,17 @@ stages:
       nfiles: 1
     - path: src/split_test.py
       hash: md5
-      md5: e03455bea055646a436101c334575a4b
-      size: 7404
+      md5: a94db3192cf07a08a9e9d39268e6e3f9
+      size: 8852
     outs:
     - path: data/processed/train_loan.csv
       hash: md5
-      md5: b114bff6f40d6938fcbf03fb89a1cffe
-      size: 913195
+      md5: a77dcbfde935aa38b4f2930c41529d67
+      size: 1633771
     - path: data/test/test_loan.csv
       hash: md5
-      md5: 088dc9c5c02b17a092027aedc4cde746
-      size: 228443
+      md5: 04b2b7e7c785b48f851fb25b0d42b5e7
+      size: 311256
   evaluate:
     cmd: python src/evaluate.py config/eval_config.yaml
     deps:
@@ -80,12 +80,12 @@ stages:
       size: 558
     - path: data/test/test_loan.csv
       hash: md5
-      md5: 088dc9c5c02b17a092027aedc4cde746
-      size: 228443
+      md5: 04b2b7e7c785b48f851fb25b0d42b5e7
+      size: 311256
     - path: output/models/
       hash: md5
-      md5: 136347e76cc86f23a0023edb70d8df83.dir
-      size: 1762566
+      md5: cfd1f8fe6d03aa33f0825a2b855bf94f.dir
+      size: 6851963
       nfiles: 1
     - path: src/evaluate.py
       hash: md5
@@ -94,20 +94,20 @@ stages:
     outs:
     - path: reports/
       hash: md5
-      md5: 222542c3623e391567df1e34f62e7b4a.dir
-      size: 734
+      md5: d476e348d54cf2422a7c79f82d45bc5e.dir
+      size: 733
       nfiles: 1
   bento_build:
     cmd: python src/bento_build.py
     deps:
     - path: bentofile.yaml
       hash: md5
-      md5: 9442024cb4a4bdba82f2e430cb9ed250
-      size: 194
+      md5: 0a5a90d3b284e9624b360249a6089dae
+      size: 256
     - path: loanriskservice.py
       hash: md5
-      md5: abacf794d55975e39c4851f0f9bd92b2
-      size: 2633
+      md5: 14d76a0f14bf827db7dfedc124e154a1
+      size: 2682
     - path: src/bento_build.py
       hash: md5
       md5: cde7acf95fe702ac163ef6f5a6936663
@@ -121,7 +121,7 @@ stages:
       size: 584
     - path: model_version.txt
       hash: md5
-      md5: c4ca4238a0b923820dcc509a6f75849b
+      md5: 8f14e45fceea167a5a36dedd4bea2543
       size: 1
     - path: src/deploy.py
       hash: md5

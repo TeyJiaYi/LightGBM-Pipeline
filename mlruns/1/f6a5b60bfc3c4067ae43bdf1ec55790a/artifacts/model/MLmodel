@@ -1,0 +1,39 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.7
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.5.1
+is_signature_from_type_hint: false
+mlflow_version: 2.21.2
+model_size_bytes: 6853617
+model_uuid: f084f670ba5641779c93c95349ddc68b
+prompts: null
+run_id: f6a5b60bfc3c4067ae43bdf1ec55790a
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "long", "name": "payFrequency", "required": true}, {"type": "double",
+    "name": "apr", "required": true}, {"type": "double", "name": "nPaidOff", "required":
+    true}, {"type": "double", "name": "loanAmount", "required": true}, {"type": "double",
+    "name": "originallyScheduledPaymentAmount", "required": true}, {"type": "long",
+    "name": "leadType", "required": true}, {"type": "long", "name": "leadCost", "required":
+    true}, {"type": "long", "name": "hasCF", "required": true}, {"type": "long", "name":
+    "region_code", "required": true}, {"type": "double", "name": "interest_pct", "required":
+    true}]'
+  outputs: '[{"type": "long", "name": "risk_indicator", "required": true}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-04-02 12:20:22.315985'

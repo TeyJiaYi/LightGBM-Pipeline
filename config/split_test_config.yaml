@@ -1,30 +1,28 @@
-original_data_folder: "data/raw/original"
+original_data_folder: data/raw/original        # Path to original raw loan data file(s)
 remove_duplicates: true
-drop_columns:
-  - loanId
-  - anon_ssn
-  - clarityFraudId
-  - originated
-  - originatedDate
-  - isFunded
-  - fpStatus
-  - approved
-  - applicationDate
-
 positive_loanstatus:
   - "Paid Off Loan"
-
 negative_loanstatus:
   - "External Collection"
   - "Internal Collection"
-  - "Returned Item"
   - "Settlement Paid Off"
   - "Settled Bankruptcy"
   - "Charged Off"
   - "Charged Off Paid Off"
+  - "Settlement Pending Paid Off"
 
-test_ratio: 0.2            # 20% final test dataset
-random_state: 42
+drop_columns:
+  - loanId
+  - anon_ssn
+  - approved
+  - originated
+  - originatedDate
+  - applicationDate
+  - isFunded
+  - fpStatus
+  - clarityFraudId
 
-# Options: "none", "undersample", "oversample", "smote"
-balance_mode: "none"
+
+test_ratio: 0.2               # Proportion of data to use as test set
+random_state: 42             # Random seed for reproducibility
+balance_mode: "smote"         # Options: "none", "undersample", "oversample", "smote"

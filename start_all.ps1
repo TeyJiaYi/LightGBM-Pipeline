@@ -9,7 +9,7 @@ Start-Process powershell -ArgumentList "Start-Process 'airflow webserver --port 
 Start-Sleep -Seconds 2
 
 Write-Host "▶️ Starting MLflow tracking server on localhost:5000..."
-Start-Process powershell -ArgumentList "mlflow server --host 127.0.0.1 --port 5000"
+Start-Process powershell -ArgumentList "mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000"
 
 Start-Sleep -Seconds 2
 

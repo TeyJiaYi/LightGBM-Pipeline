@@ -11,3 +11,8 @@ python:
 
 include:
   - loanriskservice.py
+
+exclude:
+  - airflow-docker/**
+  - __pycache__/
+  - .git/

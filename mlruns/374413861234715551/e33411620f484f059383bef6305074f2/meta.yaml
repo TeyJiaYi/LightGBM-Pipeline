@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/374413861234715551/e33411620f484f059383bef6305074f2/artifacts
+end_time: 1743589241484
+entry_point_name: ''
+experiment_id: '374413861234715551'
+lifecycle_stage: active
+run_id: e33411620f484f059383bef6305074f2
+run_name: learned-lark-994
+run_uuid: e33411620f484f059383bef6305074f2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743588869003
+status: 3
+tags: []
+user_id: '60177'
