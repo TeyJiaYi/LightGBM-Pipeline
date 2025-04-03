@@ -10,7 +10,8 @@ payload = {
     "leadType": 1,
     "leadCost": 25,
     "hasCF": 1,
-    "region_code": 101
+    "region_code": 101,
+    "interest_pct": 1
 }
 
 res = requests.post(url, json=payload)

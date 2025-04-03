@@ -43,7 +43,7 @@ stages:
     outs:
     - path: output/models/
       hash: md5
-      md5: cfd1f8fe6d03aa33f0825a2b855bf94f.dir
+      md5: ecf3260974db190189b351f872e9a0ac.dir
       size: 6851963
       nfiles: 1
   split_test:
@@ -84,7 +84,7 @@ stages:
       size: 311256
     - path: output/models/
       hash: md5
-      md5: cfd1f8fe6d03aa33f0825a2b855bf94f.dir
+      md5: ecf3260974db190189b351f872e9a0ac.dir
       size: 6851963
       nfiles: 1
     - path: src/evaluate.py
@@ -121,7 +121,7 @@ stages:
       size: 584
     - path: model_version.txt
       hash: md5
-      md5: 8f14e45fceea167a5a36dedd4bea2543
+      md5: c9f0f895fb98ab9159f51fd0297e236d
       size: 1
     - path: src/deploy.py
       hash: md5
